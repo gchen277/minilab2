@@ -1,4 +1,4 @@
-`default_nettype none
+//`default_nettype none
 
 module convolution_wrapper(
     input  logic i_clk,
@@ -16,7 +16,7 @@ module convolution_wrapper(
 );
 
     logic [11:0] value;
-    assign value = (i_blue * 2 + i_green * 3 + i_red * 3}/8;
+    assign value = (i_blue * 2 + i_green * 3 + i_red * 3)/8;
 
     logic [14:0] convolution_value;
     convolution convolution_inst (
@@ -24,9 +24,9 @@ module convolution_wrapper(
         .i_rst_n,
 
         .i_val_valid(i_valid),
-        .i_val(value)
+        .i_val(value),
 
-        .o_val_valid(o_valid)
+        .o_val_valid(o_valid),
         .o_val(convolution_value)
     );
 

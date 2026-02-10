@@ -1,8 +1,8 @@
-`default_nettype none
+//`default_nettype none
 
 module convolution #(
     parameter int N = 3,
-    parameter int DATA_WIDTH = 12,
+    parameter int DATA_WIDTH = 12
 )(
     input  logic i_clk,
     input  logic i_rst_n,
@@ -14,31 +14,36 @@ module convolution #(
     output logic [DATA_WIDTH-1+3:0] o_val
 );
 
-    int KERNEL[N][N] = {
-        {-1, 0, 1},
-        {-2, 0, 2},
-        {-1, 0, 1}
+    localparam int KERNEL[N][N] = '{
+        '{-1, 0, 1},
+        '{-2, 0, 2},
+        '{-1, 0, 1}
     };
 
-    typedef packed struct {
-        logic valid,
-        logic [DATA_WIDTH-1:0] value
+    typedef struct packed {
+        logic valid;
+        logic [DATA_WIDTH-1:0] value;
     } value_t;
 
-    value_t [DATA_WIDTH-1:0] _internal_grid[N][N];
+    value_t _internal_grid[N][N];
 
     /* Shift each row down one */
     always_ff @(posedge i_clk, negedge i_rst_n) begin
-        foreach (_internal_grid[i]) begin
+        for (int i = 0; i < N; i++) begin
             for (int j = 1; j < N; j++) begin
-                _internal_grid[i] <= _internal_grid[i+1];
+                if (!i_rst_n) begin
+                    _internal_grid[i][j] <= '0;
+                end
+                else begin
+                    _internal_grid[i][j] <= _internal_grid[i][j-1];
+                end
             end
         end
     end
     
     genvar i;
     generate
-        for (i = 0; i < N; i++) begin
+        for (i = 0; i < N; i++) begin : gen_line_buffer
             Line_Buffer1 line_inst (
                 .clken(i_val_valid),
                 .clock(i_clk),
@@ -52,8 +57,8 @@ module convolution #(
         o_val = 0;
 
         /* Perform convolution */
-        foreach (_internal_grid[i]) begin
-            foreach (_internal_grid[i][j]) begin
+        for (int i = 0; i < N; i++) begin
+            for (int j = 0; j < N; j++) begin
                 o_val += _internal_grid[i][j].value * KERNEL[i][j];
             end
         end
