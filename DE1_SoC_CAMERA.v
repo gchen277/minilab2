@@ -324,6 +324,22 @@ RAW2RGB				u4	(
 							.iY_Cont(Y_Cont)
 						   );
 
+wire [11:0] cnv_red, cnv_green, cnv_blue;
+wire cnv_valid;
+
+convolution_wrapper convolution_wrapper_inst (
+    .i_clk(D5M_PIXLCLK),
+    .i_rst_n(!DLY_RST_1),
+    .i_red(sCCD_R),
+    .i_green(sCCD_G),
+    .i_blue(sCCD_B),
+    .i_valid(sCCD_DVAL),
+    .o_red(cnv_red),
+    .o_green(cnv_green),
+    .o_blue(cnv_blue),
+    .o_valid(cnv_valid)
+);
+
 //Frame count display
 SEG7_LUT_6 			u5	(	
 							.oSEG0(HEX0),.oSEG1(HEX1),
@@ -350,8 +366,8 @@ Sdram_Control	   u7	(	//	HOST Side
 							.CLK(sdram_ctrl_clk),
 
 							//	FIFO Write Side 1
-							.WR1_DATA({1'b0,sCCD_G[11:7],sCCD_B[11:2]}),
-							.WR1(sCCD_DVAL),
+							.WR1_DATA({1'b0,cnv_green[11:7],cnv_blue[11:2]}),
+							.WR1(cnv_valid),
 							.WR1_ADDR(0),
                      .WR1_MAX_ADDR(640*480),
 						   .WR1_LENGTH(8'h50),
@@ -359,8 +375,8 @@ Sdram_Control	   u7	(	//	HOST Side
 							.WR1_CLK(~D5M_PIXLCLK),
 
 							//	FIFO Write Side 2
-							.WR2_DATA({1'b0,sCCD_G[6:2],sCCD_R[11:2]}),
-							.WR2(sCCD_DVAL),
+							.WR2_DATA({1'b0,cnv_green[6:2],cnv_red[11:2]}),
+							.WR2(cnv_valid),
 							.WR2_ADDR(23'h100000),
 							.WR2_MAX_ADDR(23'h100000+640*480),
 							.WR2_LENGTH(8'h50),
