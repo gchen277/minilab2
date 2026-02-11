@@ -35,4 +35,3 @@ module convolution_wrapper(
     assign o_blue = convolution_value[14:3];
 
 endmodule
-

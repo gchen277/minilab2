@@ -40,32 +40,38 @@ module convolution #(
             end
         end
     end
+
+    value_t input_value;
+    assign input_value.valid = i_val_valid;
+    assign input_value.value = i_val;
     
     genvar i;
     generate
         for (i = 0; i < N; i++) begin : gen_line_buffer
-            Line_Buffer1 line_inst (
+            Line_Buffer2 line_inst (
                 .clken(i_val_valid),
                 .clock(i_clk),
-                .shiftin((i == 0) ? {i_val_valid, i_val} : _internal_grid[i-1][N-1]),
+                .shiftin((i == 0) ? input_value : _internal_grid[i-1][N-1]),
                 .shiftout(_internal_grid[i][0])
             );
         end
     endgenerate
 
+    logic [DATA_WIDTH-1+3:0] val;
     always_comb begin
-        o_val = 0;
-
         /* Perform convolution */
+        val = 0;
         for (int i = 0; i < N; i++) begin
             for (int j = 0; j < N; j++) begin
-                o_val += _internal_grid[i][j].value * KERNEL[i][j];
+                val += _internal_grid[i][j].value * KERNEL[i][j];
             end
         end
-
+    end
+    
+    always_ff @(posedge i_clk) begin
         /* Take absolute value */
-        o_val = (o_val < 0) ? -o_val : o_val;
-        o_val_valid = _internal_grid[N-1][N-1].valid;
+        o_val <= (val < 0) ? -val : val;
+        o_val_valid <= _internal_grid[N-1][N-1].valid;
     end
 
 endmodule
