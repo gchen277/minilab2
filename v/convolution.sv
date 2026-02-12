@@ -25,16 +25,18 @@ module convolution #(
         logic [DATA_WIDTH-1:0] value;
     } value_t;
 
-    value_t _internal_grid[N][N];
+    value_t _internal_fifo_out[3];
+    value_t _internal_grid[3][3];
 
     /* Shift each row down one */
     always_ff @(posedge i_clk, negedge i_rst_n) begin
-        for (int i = 0; i < N; i++) begin
-            for (int j = 1; j < N; j++) begin
+        for (int i = 0; i < 3; i++) begin
+            _internal_grid[i][0] <= _internal_fifo_out[i];
+            for (int j = 1; j < 3; j++) begin
                 if (!i_rst_n) begin
                     _internal_grid[i][j] <= '0;
                 end
-                else if (_internal_grid[i][j-1].valid) begin
+                else if (i_val_valid) begin
                     _internal_grid[i][j] <= _internal_grid[i][j-1];
                 end
             end
@@ -52,7 +54,7 @@ module convolution #(
                 .clken(i_val_valid),
                 .clock(i_clk),
                 .shiftin((i == 0) ? input_value : _internal_grid[i-1][N-1]),
-                .shiftout(_internal_grid[i][0])
+                .shiftout(_internal_fifo_out[i])
             );
         end
     endgenerate
