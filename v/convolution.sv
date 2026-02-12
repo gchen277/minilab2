@@ -34,7 +34,7 @@ module convolution #(
                 if (!i_rst_n) begin
                     _internal_grid[i][j] <= '0;
                 end
-                else begin
+                else if (_internal_grid[i][j-1].valid) begin
                     _internal_grid[i][j] <= _internal_grid[i][j-1];
                 end
             end
@@ -70,8 +70,8 @@ module convolution #(
     
     always_ff @(posedge i_clk) begin
         /* Take absolute value */
-        o_val <= (val < 0) ? -val : val;
-        o_val_valid <= _internal_grid[N-1][N-1].valid;
+        o_val <= ($signed(val) < 0) ? -$signed(val) : val;
+        o_val_valid <= _internal_grid[N-1][N-1].valid && i_val_valid;
     end
 
 endmodule
