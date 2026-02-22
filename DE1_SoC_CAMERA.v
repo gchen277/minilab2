@@ -329,7 +329,12 @@ wire cnv_valid;
 
 convolution_wrapper convolution_wrapper_inst (
     .i_clk(D5M_PIXLCLK),
-    .i_rst_n(!DLY_RST_1),
+    .i_rst_n(DLY_RST_1),
+
+    .i_shift_amt(SW[8:3]),
+    .i_greyscale(SW[1]),
+    .i_horizontal(SW[2]),
+
     .i_red(sCCD_R),
     .i_green(sCCD_G),
     .i_blue(sCCD_B),

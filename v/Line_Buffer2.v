@@ -42,13 +42,15 @@ module Line_Buffer2 (
 	clock,
 	shiftin,
 	shiftout,
-	taps);
+	taps0x,
+	taps1x);
 
 	input	  clken;
 	input	  clock;
 	input	[12:0]  shiftin;
 	output	[12:0]  shiftout;
-	output	[25:0]  taps;
+	output	[12:0]  taps0x;
+	output	[12:0]  taps1x;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
 `endif
@@ -60,7 +62,10 @@ module Line_Buffer2 (
 	wire [12:0] sub_wire0;
 	wire [25:0] sub_wire1;
 	wire [12:0] shiftout = sub_wire0[12:0];
-	wire [25:0] taps = sub_wire1[25:0];
+	wire [25:13] sub_wire3 = sub_wire1[25:13];
+	wire [12:0] sub_wire2 = sub_wire1[12:0];
+	wire [12:0] taps0x = sub_wire2[12:0];
+	wire [12:0] taps1x = sub_wire3[25:13];
 
 	altshift_taps	ALTSHIFT_TAPS_component (
 				.clken (clken),
@@ -79,7 +84,7 @@ module Line_Buffer2 (
 		ALTSHIFT_TAPS_component.lpm_hint = "RAM_BLOCK_TYPE=AUTO",
 		ALTSHIFT_TAPS_component.lpm_type = "altshift_taps",
 		ALTSHIFT_TAPS_component.number_of_taps = 2,
-		ALTSHIFT_TAPS_component.tap_distance = 640,
+		ALTSHIFT_TAPS_component.tap_distance = 639,
 		ALTSHIFT_TAPS_component.width = 13;
 
 
@@ -90,30 +95,32 @@ endmodule
 // ============================================================
 // Retrieval info: PRIVATE: ACLR NUMERIC "0"
 // Retrieval info: PRIVATE: CLKEN NUMERIC "1"
-// Retrieval info: PRIVATE: GROUP_TAPS NUMERIC "0"
+// Retrieval info: PRIVATE: GROUP_TAPS NUMERIC "1"
 // Retrieval info: PRIVATE: INTENDED_DEVICE_FAMILY STRING "Cyclone V"
 // Retrieval info: PRIVATE: NUMBER_OF_TAPS NUMERIC "2"
 // Retrieval info: PRIVATE: RAM_BLOCK_TYPE NUMERIC "3"
 // Retrieval info: PRIVATE: SYNTH_WRAPPER_GEN_POSTFIX STRING "0"
-// Retrieval info: PRIVATE: TAP_DISTANCE NUMERIC "640"
+// Retrieval info: PRIVATE: TAP_DISTANCE NUMERIC "639"
 // Retrieval info: PRIVATE: WIDTH NUMERIC "13"
 // Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
 // Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone V"
 // Retrieval info: CONSTANT: LPM_HINT STRING "RAM_BLOCK_TYPE=AUTO"
 // Retrieval info: CONSTANT: LPM_TYPE STRING "altshift_taps"
 // Retrieval info: CONSTANT: NUMBER_OF_TAPS NUMERIC "2"
-// Retrieval info: CONSTANT: TAP_DISTANCE NUMERIC "640"
+// Retrieval info: CONSTANT: TAP_DISTANCE NUMERIC "639"
 // Retrieval info: CONSTANT: WIDTH NUMERIC "13"
 // Retrieval info: USED_PORT: clken 0 0 0 0 INPUT VCC "clken"
 // Retrieval info: USED_PORT: clock 0 0 0 0 INPUT NODEFVAL "clock"
 // Retrieval info: USED_PORT: shiftin 0 0 13 0 INPUT NODEFVAL "shiftin[12..0]"
 // Retrieval info: USED_PORT: shiftout 0 0 13 0 OUTPUT NODEFVAL "shiftout[12..0]"
-// Retrieval info: USED_PORT: taps 0 0 26 0 OUTPUT NODEFVAL "taps[25..0]"
+// Retrieval info: USED_PORT: taps0x 0 0 13 0 OUTPUT NODEFVAL "taps0x[12..0]"
+// Retrieval info: USED_PORT: taps1x 0 0 13 0 OUTPUT NODEFVAL "taps1x[12..0]"
 // Retrieval info: CONNECT: @clken 0 0 0 0 clken 0 0 0 0
 // Retrieval info: CONNECT: @clock 0 0 0 0 clock 0 0 0 0
 // Retrieval info: CONNECT: @shiftin 0 0 13 0 shiftin 0 0 13 0
 // Retrieval info: CONNECT: shiftout 0 0 13 0 @shiftout 0 0 13 0
-// Retrieval info: CONNECT: taps 0 0 26 0 @taps 0 0 26 0
+// Retrieval info: CONNECT: taps0x 0 0 13 0 @taps 0 0 13 0
+// Retrieval info: CONNECT: taps1x 0 0 13 0 @taps 0 0 13 13
 // Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer2.v TRUE
 // Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer2.inc FALSE
 // Retrieval info: GEN_FILE: TYPE_NORMAL Line_Buffer2.cmp FALSE
